@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="pull-left">
+            <div class="header-profile"></div>
+          </div>
+          <div class="pull-left">
+            <div class="header-title">
+              <h1 class="primary">Bastian Geneugelijk</h1>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+          <div class="header-intro">
+            <h3 class="light">I am a maker of digital products currently living in Amsterdam.<br><br>As a data scientist
+              with originally an interaction design background,<br>I enjoy working with machine learning data problems
+              that require human input.</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="coffee-table">
+    <div class="container">
+      <div class="row">
+        <a href="/posts">
+          <div class="col-md-8 col-md-offset-2 col-xs-12 blog-banner-outerbox">
+            <div class="blog-banner-box">
+              <div class="row">
+                <div class="col-md-9 col-sm-9">
+                  <div class="content">
+                    <p>Recently, I started to share some of my technical implementations and prototypes.</p>
+                  </div>
+                </div>
+                <div class="col-md-3 col-sm-3">
+                  <div class="cta">
+                    <div class="text">THE BLOG</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      {{ range where .Site.RegularPages "Section" "projects" }}
+        <div class="row">
+          <a href="{{.Permalink}}">
+            <div class="col-md-10 col-md-offset-2 col-xs-12 overview-project">
+              <div class="row">
+                <div class="col-md-2 col-xs-12 col-sm-12">
+                  <div class="overview-project-icon concept-project-icon-background">
+
+                  </div>
+                  <div class="visible-xs">
+                    <div class="overview-project-title h3">{{ .Title }}</div>
+                  </div>
+                </div>
+
+                <div class="col-md-10 col-sm-10">
+                  <div class="overview-project-description-outer-box">
+                    <div class="row">
+                      <div class="col-md-8 col-sm-7">
+                        <div class="pull-left overview-project-title-box hidden-xs">
+                          <div class="overview-project-title h3">
+                            {{ .Params.shortTitle }}
+                          </div>
+                          <div class="pull-left overview-project-description-box">
+                            <div class="overview-project-description">
+                              <h4 class="overview-project-subtitle light">{{ .Summary }}</h4>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-5">
+                          <div class="detail-box"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- {{ .Render "partials/project-card.html"}} -->
+      {{ end }}
+      <!-- <div class="row">
+        <a href="/public-transport-assistant/">
+          <div class="col-md-8 col-md-offset-2 col-xs-12 overview-project">
+            <div class="row">
+              <div class="col-md-2 col-xs-12 col-sm-2">
+                <div class="overview-project-icon concept-project-icon-background"><img
+                    src="https://ghost.bastiangeneugelijk.com/content/images/2020/01/ovassistant-home--1-.gif"></div>
+                <div class="visible-xs">
+                  <div class="overview-project-title h3">Public Transport Assistant</div>
+                </div>
+              </div>
+
+              
+              <div class="col-md-10 col-sm-10">
+                <div class="overview-project-description-outer-box">
+                  <div class="row">
+                    <div class="col-md-8 col-sm-7">
+                      <div class="pull-left overview-project-title-box hidden-xs">
+                        <div class="overview-project-title h3">Public Transport Assistant</div>
+                      </div>
+                      <div class="pull-left overview-project-description-box">
+                        <div class="overview-project-description">
+                          <h4 class="overview-project-subtitle light">Delivering alternative travel advice in case of
+                            public transport disruptions.</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-5">
+                      <div class="detail-box"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div> -->
+    </div>
+  </section>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

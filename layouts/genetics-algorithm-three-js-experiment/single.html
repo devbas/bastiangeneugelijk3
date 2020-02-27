@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+  
+  <script src="/js/genetic/util.js"></script>
+  <script src="/js/genetic/multi-genetic.js"></script>
+  <!-- <script src="/js/genetic/three.module.js"></script> -->
+  <!-- <script src="/js/genetic/three.interaction.js"></script> -->
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div id="vis-container" class="vis-container">
+              <canvas style="width: 100%; height: 100%;"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <script type="module">
+    import * as THREE from '/js/genetic/three.module.js';
+    import { OrbitControls } from '/js/genetic/OrbitControls.js';
+    import { Water } from '/js/genetic/water.js';
+    import { Sky } from '/js/genetic/sky.js';
+    var container;
+    var camera, scene, renderer, light;
+    var controls, water, sphere;
+    var population;
+    var organisms = []
+
+    function resizeCanvasToDisplaySize() {
+      const canvas = renderer.domElement;
+      const width = canvas.clientWidth;
+      const height = canvas.clientHeight;
+      if (canvas.width !== width ||canvas.height !== height) {
+        // you must pass false here or three.js sadly fights the browser
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+
+        // set render target sizes here
+      }
+    }
+
+    init();
+    animate();
+    function init() {
+      container = document.getElementById( 'vis-container' );
+      //
+      renderer = new THREE.WebGLRenderer({ canvas: document.querySelector(".vis-container canvas")});
+      renderer.setPixelRatio( window.devicePixelRatio );
+      renderer.setSize( window.innerWidth, window.innerHeight );
+      // container.appendChild( renderer.domElement );
+      //
+      scene = new THREE.Scene();
+      //
+      camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000 );
+      camera.position.set( 30, 30, 100 );
+      // camera.position.set( 30, 30, 10 );
+      //
+      light = new THREE.DirectionalLight( 0xffffff, 0.8 );
+      scene.add( light );
+      // Water
+      var waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+      water = new Water(
+        waterGeometry,
+        {
+          textureWidth: 512,
+          textureHeight: 512,
+          waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+          } ),
+          alpha: 1.0,
+          sunDirection: light.position.clone().normalize(),
+          sunColor: 0xffffff,
+          waterColor: 0x001e0f,
+          distortionScale: 3.7,
+          fog: scene.fog !== undefined
+        }
+      );
+      water.rotation.x = - Math.PI / 2;
+      scene.add( water );
+
+      // Box
+      let boxMaterial = new THREE.MeshStandardMaterial({ 
+        roughness: 0.7,
+        color: 0xffffff,
+        bumpScale: 0.2,
+        metalness: 1,
+        transparent: true, 
+        opacity: 0.4
+      })
+      let boxGeometry = new THREE.BoxBufferGeometry( 50, 100, 50 )
+      let boxMesh = new THREE.Mesh( boxGeometry, boxMaterial )
+
+      boxMesh.position.set(0, 12.5, 0 )
+      boxMesh.castShadow = true
+      scene.add( boxMesh )
+
+      let cylinderMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00, emissiveIntensity: 1 })
+      let cylinderGeometry = new THREE.CylinderGeometry(65, 65, 25, 32, 1)
+      let cylinderMesh = new THREE.Mesh( cylinderGeometry, cylinderMaterial )
+      cylinderMesh.castShadow = true 
+      scene.add(cylinderMesh)
+
+      let sphereGeometry = new THREE.SphereBufferGeometry(0.75, 16, 16)
+      evolute(population, function(offspring) {
+        population = offspring
+
+        for(var i = 0; i < population.length; i++) {
+          let bulbMat = new THREE.MeshPhongMaterial({ 
+            emissive: 0xB3D5E1, 
+            shininess: 0.1
+          })
+
+          let bulbLight = new THREE.PointLight( 0xffffff, 1, 100 );
+          bulbLight.add(new THREE.Mesh( sphereGeometry, bulbMat ))
+          
+          let x = population[i]['x'].fitness / 2
+          let y = population[i]['y'].fitness / 2
+          let z = population[i]['z'].fitness / 2
+
+          bulbLight.position.set(x, y, z)
+          bulbLight.castShadow = true 
+          bulbLight.power = 1 
+
+
+          scene.add(bulbLight)
+
+          organisms.push(bulbLight)
+        }
+      })
+
+      // Skybox
+      var sky = new Sky();
+      var uniforms = sky.material.uniforms;
+      uniforms[ 'turbidity' ].value = 10;
+      uniforms[ 'rayleigh' ].value = 2;
+      uniforms[ 'luminance' ].value = 1;
+      uniforms[ 'mieCoefficient' ].value = 0.005;
+      uniforms[ 'mieDirectionalG' ].value = 0.8;
+      var parameters = {
+        distance: 400,
+        inclination: 0.49,
+        azimuth: 0.125
+      };
+      var cubeCamera = new THREE.CubeCamera( 0.1, 1, 512 );
+      cubeCamera.renderTarget.texture.generateMipmaps = true;
+      cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipmapLinearFilter;
+      scene.background = cubeCamera.renderTarget;
+      function updateSun() {
+        var theta = Math.PI * ( parameters.inclination - 0.5 );
+        var phi = 2 * Math.PI * ( parameters.azimuth - 0.5 );
+        light.position.x = parameters.distance * Math.cos( phi );
+        light.position.y = parameters.distance * Math.sin( phi ) * Math.sin( theta );
+        light.position.z = parameters.distance * Math.sin( phi ) * Math.cos( theta );
+        sky.material.uniforms[ 'sunPosition' ].value = light.position.copy( light.position );
+        water.material.uniforms[ 'sunDirection' ].value.copy( light.position ).normalize();
+        cubeCamera.update( renderer, sky );
+      }
+      updateSun();
+      //
+      controls = new OrbitControls( camera, renderer.domElement );
+      controls.maxPolarAngle = Math.PI * 0.495;
+      controls.minAzimuthAngle = 2;
+      controls.maxAzimuthAngle = 2.7;
+      controls.target.set( 0, 60, 20 );
+      controls.minDistance = 275.0;
+      controls.maxDistance = 275.0;
+      controls.update();
+      //
+      window.addEventListener( 'resize', onWindowResize, false );
+    }
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+    }
+    function animate() {
+      resizeCanvasToDisplaySize();
+      requestAnimationFrame( animate );
+      render();
+    }
+    function render() {
+      var time = performance.now() * 0.001;
+
+      water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+
+      evolute(population, function(offspring) {
+        population = offspring
+
+        for(var i = 0; i < population.length; i++) {
+          let organism = organisms[i]
+
+          organism.position.x = (population[i]['x'].fitness / 2) - 25
+          organism.position.y = (population[i]['y'].fitness / 2) + 12.5
+          organism.position.z = (population[i]['z'].fitness / 2) - 25
+        }
+      })
+
+      renderer.render( scene, camera );
+    }
+  </script>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

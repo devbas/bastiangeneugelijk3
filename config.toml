@@ -1,0 +1,10 @@
+baseURL = "https://bastiangeneugelijk.com"
+languageCode = "en-us"
+title = "Bastian Geneugelijk"
+
+# Enter your tracking code to enable Google Analytics
+# googleAnalytics = "UA-XXXXXXXX-Y"x
+
+
+[params]
+  author = "Bastian Geneugelijk"

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }} 
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="coffee-table">
+    <div class="container">
+      {{ range .Pages }}
+      <div class="row">
+        <a href="{{.Permalink}}">
+          <div class="col-md-8 col-md-offset-2 col-xs-12 overview-blog">
+            <div class="row">
+              <div class="col-md-12 col-sm-12">
+                <div class="overview-blog-description-outer-box">
+                  <div class="row">
+                    <div class="col-md-12 col-sm-12 col-xs-12">
+                      <div class="pull-left overview-blog-title-box full-width">
+                        <div class="overview-blog-title h3 left">{{.Title}}</div>
+                      </div>
+                      <div class="pull-left overview-blog-meta full-width">
+                        <div class="date"><time dateTime={post.published_at}>{{.Date.Format "Monday, January 2, 2006"}}</time></div>
+                      </div>
+                      <div class="pull-left overview-project-description-box">
+                        <div class="overview-blog-description">
+                          <h4 class="overview-project-subtitle light">{{.Summary}}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        <!-- <a href="{{.Permalink}}">{{.Date.Format "2006-01-02"}} | {{.Title}}</a> -->
+      </div> 
+      {{ end }}
+    </div>
+  </section>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

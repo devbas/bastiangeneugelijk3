@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

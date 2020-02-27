@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>accordion</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="accordion">
+            <circle id="Oval-6" fill-opacity="0.4" fill="#8A909D" cx="20" cy="20" r="20"></circle>
+            <polygon id="Triangle-2" fill-opacity="0.8" fill="#16213B" transform="translate(20.000000, 22.000000) scale(1, -1) translate(-20.000000, -22.000000) " points="20 17 31 27 9 27"></polygon>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+  {{ partial "mathjax-support.html" }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"></script>
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text" style="width: calc(100% - 30px);">
+      <!-- <div class="container"> -->
+        <div class="row">
+          <div class="col-md-7 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title" style="margin-left: 25px;">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date" style="margin-left: 25px;"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts" style="margin-left: 25px;">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+          <div class="col-md-5 col-xs-12">
+            <div class="playground-drawing-board">
+              <div id="container"></div>
+              <div id="tile"></div>
+              <div id="canvas-placeholder" style="width: 1px; height: 1px; display: none;"></div>
+            </div>
+          </div>
+        </div>
+      <!-- </div> -->
+    </article>
+  </main>
+
+  {{ partial "footer.html" }}
+  <script type="module">
+
+    import * as THREE from '/js/transport-theory/three.module.js';
+    import { OrbitControls } from '/js/transport-theory/OrbitControls.js';
+    
+    const run = async () => {
+      const parseDate = d3.timeParse("%s")
+    
+      const data = await d3.csv('/js/transport-theory/data4.csv', function(d) {return {id: parseInt(d.id), date: parseDate(d.date), lat: d.lat, lon: d.lon}})
+    
+      const user = await d3.csv('/js/transport-theory/user.csv', function(d) {return { date: parseInt(d.date), lat: d.lat, lon: d.lon }})
+    
+      // Size of the cube 
+      const c = 12
+    
+      // Size of the display
+      const height = 736.2 
+    
+      const width = screen.width / 2
+    
+      // Date range 
+      const minDate = d3.min(data, d => d.date)
+      const maxDate = d3.max(data, d => d.date)
+    
+      const timeScale = d3
+        .scaleTime()
+        .domain([minDate, maxDate])
+        .range([-c / 2, c / 2])
+    
+      const databox = {
+        l: +d3.min(data, d => d.lon),
+        r: +d3.max(data, d => d.lon),
+        t: +d3.max(data, d => d.lat),
+        b: +d3.min(data, d => d.lat)
+      }
+    
+      const bbox = {
+        type: "Polygon",
+        coordinates: [
+          [
+            [databox.l, databox.t],
+            [databox.l, databox.t],
+            [databox.r, databox.b],
+            [databox.l, databox.b],
+            [databox.l, databox.t]
+          ]
+        ]
+      }
+    
+      const projection = d3.geoMercator().fitSize([c, c], bbox)
+    
+      const scene = new THREE.Scene()
+      scene.background = new THREE.Color('#fff')
+    
+      // Add cube outline 
+      const box = new THREE.BoxGeometry(c, c, c)
+      var geo = new THREE.EdgesGeometry(box)
+      var mat = new THREE.LineBasicMaterial({ color: 0xdddddd, linewidth: 5 })
+      var wireframe = new THREE.LineSegments(geo, mat)
+      scene.add(wireframe)
+    
+      var loader = new THREE.TextureLoader();
+      var material = new THREE.MeshBasicMaterial({ map: loader.load('./image.png') })
+      
+      console.log({ material: material, width: material.width, height: material.height })
+      var geometry = new THREE.PlaneGeometry(c, c)
+    
+      var mesh = new THREE.Mesh(geometry, material)
+      mesh.position.x = 0
+      mesh.position.y = -c / 2
+      mesh.position.z = 0
+      mesh.rotation.x = -Math.PI / 2
+      mesh.rotation.z = Math.PI / 2
+      mesh.scale.x = 1 
+      mesh.scale.y = 1
+    
+      scene.add(mesh)
+    
+      const project3D = (coord, t = minDate) => {
+        const proj = projection(coord)
+        const time = timeScale(t)
+    
+        return new THREE.Vector3(proj[1] - c / 2, time, c / 2 - proj[0])
+      }
+      
+      const trajectories = {}
+      for(let i = 1; i <= 8; i++) {
+        const trajectory = data.filter(d => d.id === i)
+        trajectories[i] = {}
+        trajectories[i].coords = trajectory.map(d => project3D([d.lon, d.lat], d.date))
+      }
+    
+      // const singleVehicleData = data.filter(d => d.id === 5)
+      const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
+      // const userCoord = user.map(u => project3D([u.lon, u.lat], u.date))
+      const rawUserCoord = data.filter(d => d.id === 9)
+      const userCoord = rawUserCoord.map(d => project3D([d.lon, d.lat], d.date))
+      console.log({ user: user, vehicleCoord: vehicleCoord, userCoord: userCoord})
+      const userLocationScrollBuffer = 5
+      const userMinCoordZ = d3.min(userCoord, u => u.z)
+      const userMaxCoordZ = d3.max(userCoord, u => u.z)
+      const userDiffCoordZ = userMaxCoordZ - userMinCoordZ 
+    
+    
+      // const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
+      vehicleCoord.forEach(function(d) {
+        var geo = new THREE.SphereGeometry(0.07, 16, 16)
+        // var mat = new THREE.MeshBasicMaterial({ color: '#004346' })
+        var mat = new THREE.MeshBasicMaterial({ color: '#FACB38' })
+        var cube = new THREE.Mesh(geo, mat)
+    
+        cube.position.x = d.x
+        cube.position.y = d.y
+        cube.position.z = d.z
+    
+        scene.add(cube)
+      })
+    
+      const renderer = new THREE.WebGLRenderer({antialias: true})
+          
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(devicePixelRatio);
+    
+      const camera = new THREE.PerspectiveCamera(30, (width/height), 0.1, 60)
+      camera.position.set(30, 10, 25)
+    
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.minDistance = 3;
+      controls.maxDistance = 50;
+      controls.enableZoom = false;
+      
+      var curveMaterial = new THREE.LineBasicMaterial({ color: '#FACB38', linewidth: 5 })
+      var userGeo = new THREE.SphereGeometry(0.16, 16, 16)
+      var userMat = new THREE.MeshBasicMaterial({ color: '#D0021B' })
+      var userRadiusMat = new THREE.MeshBasicMaterial({ color: 'rgba(208,2,27,50)'})
+      var userRadiusScale = 20
+    
+      const userCube = new THREE.Mesh(userGeo, userMat)
+      userCube.position.x = userCoord[0].x
+      userCube.position.y = userCoord[0].y
+      userCube.position.z = userCoord[0].z
+    
+      const userRadiusCube = new THREE.Mesh(userGeo, userRadiusMat)
+      userRadiusCube.position.x = userCoord[0].x
+      userRadiusCube.position.y = userCoord[0].y
+      userRadiusCube.position.z = userCoord[0].z
+    
+      scene.add(userRadiusCube)
+      scene.add(userCube)
+    
+      const redraw = () => {
+        const scrollTopOffset = window.pageYOffset || document.documentElement.scrollTop;
+    
+        const body = document.body,
+        html = document.documentElement;
+        const scrollHeight = Math.max( body.scrollHeight, body.offsetHeight, 
+                           html.clientHeight, html.scrollHeight, html.offsetHeight );
+    
+        const windowHeight = window.innerHeight
+        const userScrollDate = userMinCoordZ + (userDiffCoordZ * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
+        for(const i in trajectories) {
+          if(i > 0) {
+            const trajectory = trajectories[i]
+            const activePointsBoundary = Math.ceil(trajectory.coords.length * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
+            trajectory.geometry.setDrawRange(trajectory.points.length - activePointsBoundary, trajectory.points.length)
+    
+            const curve = new THREE.Line(trajectory.geometry, curveMaterial)
+            scene.add(curve)
+          }
+        }
+    
+        userRadiusScale = userRadiusScale * 2
+        userRadiusCube.scale.x = userRadiusScale
+        userRadiusCube.scale.y = userRadiusScale
+        userRadiusCube.scale.z = userRadiusScale
+    
+        userCoord.forEach(function (u) {
+          if(u.z > userScrollDate - userLocationScrollBuffer && u.z < userScrollDate + userLocationScrollBuffer) {
+    
+            // if(userCube.position.z !== u.z) {
+            //   userRadiusScale = 2 
+            //   userRadiusCube.position.x = u.x 
+            //   userRadiusCube.position.y = u.y
+            //   userRadiusCube.position.z = u.z
+            //   userRadiusCube.scale.x = userRadiusScale
+            //   userRadiusCube.scale.y = userRadiusScale
+            //   userRadiusCube.scale.z = userRadiusScale
+            // } 
+    
+            userCube.position.x = u.x
+            userCube.position.y = u.y
+            userCube.position.z = u.z
+          }
+          
+        })
+    
+        renderer.render(scene, camera);
+      }
+      
+      controls.addEventListener("change", redraw);
+      document.addEventListener("scroll", redraw);
+    
+      // add line through data points
+    
+      // for an interpolated curve
+    
+      for(const i in trajectories) {
+        if(i > 0) {
+          const trajectory = trajectories[i]
+          
+          const curve = new THREE.CatmullRomCurve3(trajectory.coords)
+    
+          trajectories[i].points = curve.getPoints(trajectory.coords.length > 200 ? 200 : trajectory.coords.length);
+          trajectories[i].geometry = new THREE.BufferGeometry().setFromPoints(trajectories[i].points)
+        }
+      }
+    
+      renderer.render(scene, camera);
+    
+      const container = document.getElementById( 'tile' );
+      container.appendChild(renderer.domElement)
+    }
+    
+    run()
+  </script>
+</body>
+
+</html>

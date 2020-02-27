@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.2 (39069) - http://www.bohemiancoding.com/sketch -->
+    <title>Artboard 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard-2">
+            <rect id="Rectangle" fill="#252C41" x="0" y="0" width="40" height="40"></rect>
+            <g id="Shape" transform="translate(-7.000000, 13.000000)" fill-rule="nonzero" fill="#FFFFFF">
+                <g id="Group" transform="translate(19.099226, 20.385080) rotate(-58.000000) translate(-19.099226, -20.385080) translate(2.599226, 8.885080)">
+                    <path d="M31.9791963,9.34534092 C32.7479259,10.3942009 32.7479259,12.0358947 31.9791963,13.0782399 L26.5394569,20.4984354 C25.8293591,21.4756341 24.3765904,22.2117904 23.164864,22.2117904 L3.32773047,22.2117904 C1.92056435,22.2117904 0.773984543,21.0652106 0.773984543,19.6580445 L0.773984543,2.76553636 C0.773984543,1.35837024 1.92056435,0.211790432 3.32773047,0.211790432 L23.164864,0.211790432 C24.3700757,0.211790432 25.8228445,0.947946784 26.5394569,1.92514548 L31.9791963,9.34534092 Z" id="Shape"></path>
+                </g>
+            </g>
+            <circle id="Oval" fill="#252C41" fill-rule="nonzero" cx="17" cy="25" r="2"></circle>
+        </g>
+    </g>
+</svg>
