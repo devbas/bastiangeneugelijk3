@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+  <link rel="stylesheet" id="style" href="/css/ovassistant.css" type="text/css" media="all">
+  <script src="/js/ovassistant-concept/svg4everybody.js"></script>
+	<script>svg4everybody(); // run it now or whenever you are ready</script>
+	<script src="/js/ovassistant-concept/lodash.min.js"></script>
+	<script src="/js/ovassistant-concept/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+	<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js"></script>
+	<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css" rel='stylesheet' />
+	
+	<script src="/js/ovassistant-concept/turf.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="map-visualization-box lg-mg-top" id="map-visualization-box">
+        <div id="phone">
+          <div id="screen">
+          </div>
+        </div>
+        <div id="map"></div>
+        <div id="map-overlay-start">
+          <div class="outer-click-box" id="visualization-start" onclick="onVisualizationStart()">
+            <div class="inner-border-box">
+              <div class="inner-box" id="visualization-start-content">
+                <div class="visualization-loading"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <script src="/js/ovassistant-concept/init.js"></script>
+      <div class="container single-project-section-left ov-visualization-bump">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left">
+              <div class="single-project-text content-body">
+                <p>
+                  In addition to updating a travelers journey in case of disruptions, there are many other things we can do with this functionality. For example, an automated message can be sent as soon as the traveler experiences a disruption. A full overview of the possible use cases I could think of so far is listed below.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-grid">
+        <div class="row">
+          <div class="col-md-4 first-cell cell cell-border-bottom">
+            <div class="image">
+              <div class="ov-share-trip-image"></div>
+            </div>
+            <div class="title">
+              <h3>Share your trip</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Share trips with friends to let them know which train you're on and if you have a delay. 
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 cell cell-border-bottom">
+            <div class="image">
+              <div class="ov-order-food-image"></div>
+            </div>
+            <div class="title">
+              <h3>Order food on the go</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Do not feel like FASTfood? Avoid waiting times? Order food from the train and pick it up once you're at the station.
+              </p>  
+            </div>
+          </div>
+          <div class="col-md-4 cell last-cell cell-border-bottom">
+            <div class="image">
+              <div class="ov-receive-reminders-image"></div>
+            </div>
+            <div class="title">
+              <h3>Receive reminders</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Need to pickup a package at a train station? Notifications can be send when you're near it. 
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4 first-cell cell">
+            <div class="image">
+              <div class="ov-plan-trip-image"></div>
+            </div>
+            <div class="title">
+              <h3>Plan routes on the go</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Plan routes with the current vehicle as starting point rather than calculate when you arrive somewhere.
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 cell">
+            <div class="image">
+              <div class="ov-proactive-functionality-image"></div>
+            </div>
+            <div class="title">
+              <h3>Pro-active functionality</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Every Monday at 8' on the same train? Maybe you're heading towards the same destination again. 
+              </p>
+            </div>
+          </div>
+          <div class="col-md-4 last-cell cell">
+            <div class="image">
+              <div class="ov-send-message-image"></div>
+            </div>
+            <div class="title">
+              <h3>Send messages in case of disruptions</h3>
+            </div>
+            <div class="description content-body">
+              <p>
+                Automatically update your colleagues when you will be late for a meeting because of a disruption.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </article>
+  </main>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

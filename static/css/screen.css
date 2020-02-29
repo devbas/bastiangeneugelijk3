@@ -941,7 +941,6 @@ box-shadow: inset 0 0 6px 1px rgba(0,0,0,0.15);
 	}
 
 	.overview-project-title.h3 {
-		/* margin-left: 10px; */
 		width: 100%; 
 		margin-top: 10px;
 		margin-right: 10px;
@@ -993,8 +992,8 @@ box-shadow: inset 0 0 6px 1px rgba(0,0,0,0.15);
 	}
 
 	.single-project-text p, .single-project-text ul {
-		font-size: 16px; 
-		line-height: 24px;
+		/* font-size: 16px; 
+		line-height: 24px; */
 		min-height: 24px;
 	}
 
