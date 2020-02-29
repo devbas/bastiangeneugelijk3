@@ -2,7 +2,7 @@
 <html lang="en-US">
 
 <head>
-  {{ partial "header.html" }} 
+  {{ partial "header.html" }}
 </head>
 
 <body>
@@ -42,7 +42,9 @@
                         <div class="overview-blog-title h3 left">{{.Title}}</div>
                       </div>
                       <div class="pull-left overview-blog-meta full-width">
-                        <div class="date"><time dateTime={post.published_at}>{{.Date.Format "Monday, January 2, 2006"}}</time></div>
+                        <div class="date">
+                          <time dateTime={post.published_at}>{{.Date.Format "Monday, January 2, 2006"}}</time>
+                        </div>
                       </div>
                       <div class="pull-left overview-project-description-box">
                         <div class="overview-blog-description">
@@ -54,10 +56,9 @@
                 </div>
               </div>
             </div>
-          </a>
-        </div>
-        <!-- <a href="{{.Permalink}}">{{.Date.Format "2006-01-02"}} | {{.Title}}</a> -->
-      </div> 
+          </div>
+        </a>
+      </div>
       {{ end }}
     </div>
   </section>

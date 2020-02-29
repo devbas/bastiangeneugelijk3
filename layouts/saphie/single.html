@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container single-project-section-left">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <div class="pull-left">
+              <div class="single-project-still-description content-body">
+                <p>
+                  Saphie started from the analysis that many organizations struggled keeping their volunteers up-to-date with available tasks and upcoming events. Many of this work was done by hand and we thought this could be done more efficient and effective by bundling efforts and informing volunteers from one touchpoint rather than text messages or postal deliveries. 
+                </p>
+              </div>
+            </div>
+            <div class="pull-left single-project-still-image-box">
+              <div class="single-project-still-image" style="background-image: url(/images/saphie-still-one.png)">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-section-right">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <div class="pull-left single-project-still-image-box">
+              <div class="single-project-still-image" style="background-image: url(/images/saphie-still-two.png)"></div>
+            </div>
+            <div class="pull-left">
+              <div class="single-project-still-description content-body">
+                <p>
+                  Saphie also wanted to lower the treshold for people to start volunteering. We discovered volunteers often were asked to reserve the whole day which can be experienced as challenging. Therefore, we offered clear tasks and clear schedules. 
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-section-left">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <div class="pull-left">
+              <div class="single-project-still-description content-body">
+                <p>
+                  In order to deliver fit-for-a-task volunteers to organizations, volunteers could be asked to provide additional information or certificates. To make this easy for volunteers, known data was already pre-filled in the registration form.
+                </p>
+              </div>
+            </div>
+            <div class="pull-left single-project-still-image-box">
+              <div class="single-project-still-image" style="background-image: url(/images/saphie-still-three.png)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-section-left">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left content-body">
+              <h3>Personal Note</h3>
+              <p>The Saphie company was all about connecting organizations with volunteers during an event like a marathon. <br/><br/>
+    
+    Benefits for volunteers were that they exactly knew what and when to do. Benefits for organizations were that they had instant insights in volunteer management and could ask for certain skills in order to select volunteers. <br/><br/>
+    
+    The network effect for the Saphie company was to get existing organization including their volunteers on board so volunteers could also volunteering in other organizations. <br/><br/>
+    
+    Didn't succeed because: biased image of the branche, too much development focused. <br/><br/>
+    
+    Technology stack: Blaze, SASS, MeteorJS, Mongo, Docker</p>
+    
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-section-left">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left content-body">
+              <h3>Other Team Members</h3>
+              <p><a href="https://www.linkedin.com/in/roald-heiwegen-92361643/">Roald Heiwegen</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </article>
+  </main>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>

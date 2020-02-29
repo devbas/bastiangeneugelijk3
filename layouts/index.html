@@ -34,6 +34,7 @@
 
   <section class="coffee-table">
     <div class="container">
+      
       <div class="row">
         <a href="/posts">
           <div class="col-md-8 col-md-offset-2 col-xs-12 blog-banner-outerbox">
@@ -56,74 +57,44 @@
       </div>
 
       {{ range where .Site.RegularPages "Section" "projects" }}
-        <div class="row">
-          <a href="{{.Permalink}}">
-            <div class="col-md-10 col-md-offset-2 col-xs-12 overview-project">
-              <div class="row">
-                <div class="col-md-2 col-xs-12 col-sm-12">
-                  <div class="overview-project-icon concept-project-icon-background">
-
-                  </div>
-                  <div class="visible-xs">
-                    <div class="overview-project-title h3">{{ .Title }}</div>
-                  </div>
-                </div>
-
-                <div class="col-md-10 col-sm-10">
-                  <div class="overview-project-description-outer-box">
-                    <div class="row">
-                      <div class="col-md-8 col-sm-7">
-                        <div class="pull-left overview-project-title-box hidden-xs">
-                          <div class="overview-project-title h3">
-                            {{ .Params.shortTitle }}
-                          </div>
-                          <div class="pull-left overview-project-description-box">
-                            <div class="overview-project-description">
-                              <h4 class="overview-project-subtitle light">{{ .Summary }}</h4>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-md-4 col-sm-5">
-                          <div class="detail-box"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-              </div>
-            </div>
-          </a>
-        </div>
-        <!-- {{ .Render "partials/project-card.html"}} -->
-      {{ end }}
-      <!-- <div class="row">
-        <a href="/public-transport-assistant/">
+      <div class="row">
+        <a href="{{.Permalink}}">
           <div class="col-md-8 col-md-offset-2 col-xs-12 overview-project">
             <div class="row">
               <div class="col-md-2 col-xs-12 col-sm-2">
-                <div class="overview-project-icon concept-project-icon-background"><img
-                    src="https://ghost.bastiangeneugelijk.com/content/images/2020/01/ovassistant-home--1-.gif"></div>
+                <div class="overview-project-icon concept-project-icon-background" style="background-image: url('{{ .Params.featuredImage }}')">
+
+                </div>
                 <div class="visible-xs">
-                  <div class="overview-project-title h3">Public Transport Assistant</div>
+                  <div class="overview-project-title h3">{{ .Title }}</div>
                 </div>
               </div>
 
-              
-              <div class="col-md-10 col-sm-10">
+              <div class="col-md-10 col-sm-10 col-xs-12">
                 <div class="overview-project-description-outer-box">
                   <div class="row">
-                    <div class="col-md-8 col-sm-7">
+                    <div class="col-md-8 col-sm-7 col-xs-12">
                       <div class="pull-left overview-project-title-box hidden-xs">
-                        <div class="overview-project-title h3">Public Transport Assistant</div>
-                      </div>
-                      <div class="pull-left overview-project-description-box">
-                        <div class="overview-project-description">
-                          <h4 class="overview-project-subtitle light">Delivering alternative travel advice in case of
-                            public transport disruptions.</h4>
+                        <div class="overview-project-title h3">
+                          {{ .Params.shortTitle }}
+                        </div>
+                        <div class="pull-left overview-project-description-box">
+                          <div class="overview-project-description">
+                            <h4 class="overview-project-subtitle light">{{ .Summary }}</h4>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div class="col-md-4 col-sm-5">
-                      <div class="detail-box"></div>
+                    <div class="col-md-4 col-sm-5 col-xs-12">
+                      <div class="detail-box">
+                        {{ if .Params.project }}
+                          <p><span class="key">■&nbsp;&nbsp;&nbsp;PROJECT:</span>&nbsp;&nbsp;&nbsp;<span class="value">{{ .Params.project }}</span></p>
+                        {{ end }}
+                        <p><span class="key">■&nbsp;&nbsp;&nbsp;DATE:</span>&nbsp;&nbsp;&nbsp;<span class="value">{{ .Date.Format "2006" }}</span></p> 
+                        {{ if .Params.role }}
+                          <p><span class="key">■&nbsp;&nbsp;&nbsp;ROLE:</span>&nbsp;&nbsp;&nbsp;<span class="value">{{ .Params.role }}</span></p> 
+                        {{ end }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -131,7 +102,8 @@
             </div>
           </div>
         </a>
-      </div> -->
+      </div>
+      {{ end }}
     </div>
   </section>
 

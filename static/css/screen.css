@@ -320,7 +320,7 @@ footer {
 .overview-project {
 	cursor: pointer;
 	margin-top: 70px;
-	width: 600px;
+	/* width: 600px; */
 }
 
 .overview-blog {
@@ -395,6 +395,7 @@ footer {
 
 .concept-project-icon-background {
 	background-color: #B0B3BB; 
+	background-size: cover;
 }
 
 .concept-project-icon-background img {
@@ -432,9 +433,9 @@ footer {
 
 .single-project-still-description {
 	max-width: 420px;
-	font-size: 18px;
-	color: #16213B; 
-	line-height: 28px;
+	/* font-size: 18px; */
+	/* color: #16213B;  */
+	/* line-height: 28px; */
 }
 
 .single-project-abstract, .content-body h4 {
@@ -476,6 +477,7 @@ footer {
 
 .detail-box .value {
 	opacity: 0.9;
+	text-transform: uppercase;
 }
 
 .detail-box p {
@@ -920,10 +922,6 @@ box-shadow: inset 0 0 6px 1px rgba(0,0,0,0.15);
 		padding-left: 0;
 	}
 
-	.overview-project {
-		width: auto;
-	}
-
 	.overview-project-title-box {
 		line-height: 75px;
 		height: 75px;
@@ -943,8 +941,10 @@ box-shadow: inset 0 0 6px 1px rgba(0,0,0,0.15);
 	}
 
 	.overview-project-title.h3 {
-		margin-left: 10px;
+		/* margin-left: 10px; */
+		width: 100%; 
 		margin-top: 10px;
+		margin-right: 10px;
 	}
 
 	.overview-project-title, .single-project-title, .overview-blog-title {

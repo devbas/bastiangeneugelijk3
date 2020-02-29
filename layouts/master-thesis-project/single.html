@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+  {{ partial "header.html" }}
+  <script>
+		function toggleAccordionItem(self) {
+			var dataItem = self.getAttribute('data-item');
+			
+			var accordion = document.querySelector('.accordion-item[data-item="' + dataItem + '"]');
+			if(accordion.getElementsByClassName('body')[0].className.indexOf('active') === -1) {
+				accordion.getElementsByClassName('body')[0].className = 'body active';
+				accordion.getElementsByClassName('header')[0].className = 'header active';
+			} else {
+				accordion.getElementsByClassName('body')[0].className = 'body';
+				accordion.getElementsByClassName('header')[0].className = 'header';
+			}
+		
+		}
+  </script>
+  <link rel="stylesheet" id="style" href="/css/animate.css" type="text/css" media="all">
+</head>
+
+<body>
+  <header class="project-page">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8 col-md-offset-2 col-xs-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="pull-left"><a href="/">
+                  <div class="header-profile-small"></div>
+                </a></div>
+              <div class="pull-left header-profile-small-text">
+                <div class="header-profile-small-title"><a href="/">Bastian Geneugelijk</a></div>
+                <div class="header-profile-small-description">I am a maker of digital products currently living in
+                  Amsterdam.<br>As a data scientist with originally an interaction design background,<br>I enjoy working
+                  with machine learning data problems that require human input.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="site-main">
+    <article class="single-project-text">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-offset-2 col-md-8 col-xs-12">
+            <div class="pull-left full-width">
+              <div class="single-project-title">
+                <h1>{{ .Title }}</h1>
+              </div>
+              <div class="date"><time datetime="{{ .Date }}">{{ .Date.Format "Monday, January 2, 2006" }}</time></div>
+              <section class="content-body load-external-scripts">
+                {{ .Content }}
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background-color: #fff; margin-top: 60px;">
+        <div class="figure-label-box">
+            <div class="container">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="figure-label"><i>HC Engine Overview</i></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        <div class="container single-project-figure-left">
+          <div class="row">
+            <div class="col-md-offset-1 col-md-5 col-xs-12 col-sm-7 col-lg-offset-2 col-lg-4">
+              <div class="triplet-hc-engine-figure" id="triplet-hc-engine-figure">
+                <script>
+                  var engineBox = document.getElementById('triplet-hc-engine-figure');
+                  
+                  var data = [
+                    {
+                      'top': '65%', 
+                      'left': '30%', 
+                      'text': '1'
+                    }, 
+                    {
+                      'top': '65%', 
+                      'left': '67%', 
+                      'text': '2'
+                    }, 
+                    {
+                      'top': '69%', 
+                      'left': '47%', 
+                      'text': '3'
+                    }, 
+                    {
+                      'top': '59%', 
+                      'left': '17%', 
+                      'text': '7'
+                    }, 
+                    {
+                      'top': '27%', 
+                      'left': '27%', 
+                      'text': '5'
+                    }, 
+                    {
+                      'top': '16%', 
+                      'left': '60%', 
+                      'text': '4'
+                    }, 
+                    {
+                      'top': '46%', 
+                      'left': '30%', 
+                      'text': '6'
+                    }
+                  ]
+    
+                  data.forEach(function(touchData) {
+                    
+                    var touchpoint = document.createElement('div');
+                    touchpoint.className = 'touchpoint animated pulse infinite';
+                    touchpoint.setAttribute('style', 'top: ' + touchData.top + '; left: ' + touchData.left + '; animation-delay: -' + Math.random() + 's');
+                    touchpoint.setAttribute('onclick', 'toggleAccordionItem(this)')
+                    touchpoint.setAttribute('data-item', touchData.text)
+    
+                    var touchpointInner = document.createElement('div');
+                    touchpointInner.classList.add('inner');
+                    
+                    var text = document.createTextNode(touchData.text)
+                    touchpointInner.appendChild(text) 
+                    
+                    touchpoint.appendChild(touchpointInner)
+    
+                    engineBox.appendChild(touchpoint)
+                  })
+                </script>
+              </div>
+            </div>
+            <div class="col-md-4 col-xs-12 col-sm-5 col-lg-4">
+              <div class="accordion">
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="1">
+                  <div class="header">
+                    <h4>1. Pick sentence</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                        To extract a relation, the user picks a document with sentences from the system. Therefore, the user is focused on one sentence at a time. By splitting documents up into sentences, I attempt to create a more organized and clear interface. For the task of manual triplet extraction, we do not put strict lexical constraints in place, in contrast to multiple automatic triplet extraction approaches. Since the imported text does not necessarily adhere to any specific structure, I am cautious to implement such strict constraints. However, a sentence may have many words what leads to a lot of options for a possible relation. To reduce the number of options and to attempt to steer the focus of the user slightly, we implement the following lexical guidelines:
+                        <ul>
+                          <li>When the <i>predicate</i> in our system is active, all the <i>verbs</i> in the given sentence are highlighted;</li>
+                          <li>When the <i>subject</i> or <i>object</i> in our system is active, all the <i>nouns</i> in the given sentence are highlighted.</li>
+                        </ul>
+                        Words get visually highlighted in the sentence as soon as they meet these guidelines.
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="2">
+                  <div class="header">
+                    <h4>2. Return extracted triplet</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      Since one user has now extracted a triplet, one vote is counted for this triplet (one for correct, zero votes for incorrect). Therefore, the triplet is saved to the IE triplet store, until majority voting indicates that the triplet is incorrect.
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="3">
+                  <div class="header">
+                    <h4>3. Receive points</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      After the triplet is saved, the user receives points for his effort. These points are added to the total amount of points the user has collected.
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="4">
+                  <div class="header">
+                    <h4>4. Triplet verification</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      Triplet verification is conducted by either agreeing or disagreeing with a given triplet. The triplet verification task contributes to the following goals:
+                      <ul>
+                        <li><i>Cheating detection:</i> Since our system deals with crowdsourced users and tasks that cannot be verified automatically, it becomes difficult to detect cheating users. To overcome this issue, we implement triplet verification by using a control group approach. By allowing users to verify triplets from other users, the system can use majority voting make a distinction between correct and incorrect extracted triplets and can take action against cheating users.</li>
+                        <li><i>Precision:</i> An extracted triplet is verified by multiple users. Following the idea of <i>wisdom of crowds</i>, triplet verification by multiple users contributes to a <i>high</i> precision of extracted triplets.</li>
+                        <li><i>Cheap task:</i> Compared to the task of triplet verification, the task of manual triplet extraction requires more interaction with the system, and therefore it is considered an expensive task. Triplet verification shows the user already extracted triplets, to minimize the need for the expensive task of triplet extraction.</li>
+                      </ul>
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="5">
+                  <div class="header">
+                    <h4>5. Crowd verification</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      After a user has verified a triplet, the vote is submitted to the HC datastore after which we calculate with majority voting whether the triplet is correct or incorrect.
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="6">
+                  <div class="header">
+                    <h4>6. Majority voting</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      When majority voting calculates the triplet is found incorrect, the triplet is removed from our IE datastore. When the triplet is found correct, the triplet is added to our IE datastore. In case the outcome of majority voting has not changed compared to the previous calculation, only the vote is saved.
+                    </p>
+                  </div>
+                </div>
+                <div class="accordion-item" onclick="toggleAccordionItem(this)" data-item="7">
+                  <div class="header">
+                    <h4>7. Update points</h4>
+                  </div>
+                  <div class="body">
+                    <p>
+                      When the status of the triplet has either changed from correct to incorrect or from incorrect to correct, points are withdrawn from or added to the user who initially extracted the triplet. 
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container single-project-section-left content-body">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <div class="row">
+              <div class="col-md-5 col-xs-12 col-sm-6">
+                <p>
+                  The relation verification UI shows the current amount of points the user has, the position of the user relative to the crowd based on points, a highlighted triplet and the sentence to give context to the provided triplet. The user has the choice to either accept or reject the presented triplet. When the user clicks on his answer of choice, feedback about given points is shown and the next triplet is loaded. In case all triplets for the given sentence are verified, the context of the game changes to the task of manual triplet extraction.
+                </p>
+              </div>
+              <div class="col-md-7 col-xs-12 col-sm-6">
+                <div class="single-project-still-image relation-verification-image"></div>
+                <div class="image-label">
+                  <i>Relation Verification Interface</i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="container single-project-section-right content-body">
+        <div class="row">
+          <div class="col-md-12 col-xs-12">
+            <div class="row">
+              <div class="col-md-7 col-xs-12 col-sm-6">
+                <div class="single-project-still-image relation-extraction-image"></div>
+                <div class="image-label">
+                  <i>Relation Extraction Interface</i>
+                </div>
+              </div>
+              <div class="col-md-5 col-xs-12 col-sm-6">
+                <p>
+                  To design the triplet extraction interface, we have to decide on the balance of precision versus recall. By focusing on the precision, we concentrate on relations where there is little doubt about whether they are correct or not. We can also choose to focus on the recall of manual triplet extraction. By focusing on recall, we concentrate on as many relations as possible, attempting to extract all possible triplets for a given sentence. When focusing on recall, users need to have a degree of freedom, so that it is possible to extract as many triplets as possible. When we focus on precision, we give our users less freedom and let them play according to rules, to ensure that triplets are of high quality.<br/><br/>Since the uploaded text in our system does not necessarily follow a grammatical structure, we decided to focus in our triplet extraction interface on recall. This focus is expressed by giving the user freedom to apply any word from a sentence to one of the attributes of a triplet.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </article>
+  </main>
+
+  {{ partial "footer.html" }}
+</body>
+
+</html>
