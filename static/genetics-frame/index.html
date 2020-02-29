@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - shaders - ocean</title>
+    <meta charset="utf-8">
+    <script src="js/util.js"></script>
+    <script src="js/multi-genetic.js"></script>
+    <script src="js/three.interaction.js"></script>
+    <style>
+      body, canvas {
+        margin: 0; 
+        padding: 0; 
+      }
+    </style>
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	</head>
+	<body>
+
+		<div id="container"></div>
+
+		<script type="module">
+			import * as THREE from './js/three.module.js';
+			import { OrbitControls } from './js/OrbitControls.js';
+			import { Water } from './js/water.js';
+      import { Sky } from './js/sky.js';
+			var container;
+			var camera, scene, renderer, light;
+      var controls, water, sphere;
+      var population;
+      var organisms = []
+
+			init();
+			animate();
+			function init() {
+				container = document.getElementById( 'container' );
+				//
+				renderer = new THREE.WebGLRenderer();
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				container.appendChild( renderer.domElement );
+				//
+				scene = new THREE.Scene();
+				//
+				camera = new THREE.PerspectiveCamera( 55, window.innerWidth / window.innerHeight, 1, 20000 );
+				camera.position.set( 30, 30, 100 );
+				// camera.position.set( 30, 30, 10 );
+				//
+				light = new THREE.DirectionalLight( 0xffffff, 0.8 );
+				scene.add( light );
+				// Water
+				var waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+				water = new Water(
+					waterGeometry,
+					{
+						textureWidth: 512,
+						textureHeight: 512,
+						waterNormals: new THREE.TextureLoader().load( 'textures/waternormals.jpg', function ( texture ) {
+							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+						} ),
+						alpha: 1.0,
+						sunDirection: light.position.clone().normalize(),
+						sunColor: 0xffffff,
+						waterColor: 0x001e0f,
+						distortionScale: 3.7,
+						fog: scene.fog !== undefined
+					}
+				);
+				water.rotation.x = - Math.PI / 2;
+        scene.add( water );
+
+        // Box
+        let boxMaterial = new THREE.MeshStandardMaterial({ 
+          roughness: 0.7,
+          color: 0xffffff,
+          bumpScale: 0.2,
+          metalness: 1,
+          transparent: true, 
+          opacity: 0.4
+        })
+        let boxGeometry = new THREE.BoxBufferGeometry( 50, 100, 50 )
+        let boxMesh = new THREE.Mesh( boxGeometry, boxMaterial )
+
+        boxMesh.position.set(0, 12.5, 0 )
+        boxMesh.castShadow = true
+        scene.add( boxMesh )
+
+        let cylinderMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00, emissiveIntensity: 1 })
+        let cylinderGeometry = new THREE.CylinderGeometry(65, 65, 25, 32, 1)
+        let cylinderMesh = new THREE.Mesh( cylinderGeometry, cylinderMaterial )
+        cylinderMesh.castShadow = true 
+        scene.add(cylinderMesh)
+
+        let sphereGeometry = new THREE.SphereBufferGeometry(0.75, 16, 16)
+        evolute(population, function(offspring) {
+          population = offspring
+
+          for(var i = 0; i < population.length; i++) {
+            let bulbMat = new THREE.MeshPhongMaterial({ 
+							emissive: 0xB3D5E1, 
+              shininess: 0.1
+            })
+
+						let bulbLight = new THREE.PointLight( 0xffffff, 1, 100 );
+            bulbLight.add(new THREE.Mesh( sphereGeometry, bulbMat ))
+            
+            let x = population[i]['x'].fitness / 2
+            let y = population[i]['y'].fitness / 2
+            let z = population[i]['z'].fitness / 2
+
+            bulbLight.position.set(x, y, z)
+            bulbLight.castShadow = true 
+            bulbLight.power = 1 
+
+
+            scene.add(bulbLight)
+
+            organisms.push(bulbLight)
+          }
+        })
+
+				// Skybox
+				var sky = new Sky();
+				var uniforms = sky.material.uniforms;
+				uniforms[ 'turbidity' ].value = 10;
+				uniforms[ 'rayleigh' ].value = 2;
+				uniforms[ 'luminance' ].value = 1;
+				uniforms[ 'mieCoefficient' ].value = 0.005;
+				uniforms[ 'mieDirectionalG' ].value = 0.8;
+				var parameters = {
+					distance: 400,
+					inclination: 0.49,
+					azimuth: 0.125
+				};
+				var cubeCamera = new THREE.CubeCamera( 0.1, 1, 512 );
+				cubeCamera.renderTarget.texture.generateMipmaps = true;
+				cubeCamera.renderTarget.texture.minFilter = THREE.LinearMipmapLinearFilter;
+				scene.background = cubeCamera.renderTarget;
+				function updateSun() {
+					var theta = Math.PI * ( parameters.inclination - 0.5 );
+					var phi = 2 * Math.PI * ( parameters.azimuth - 0.5 );
+					light.position.x = parameters.distance * Math.cos( phi );
+					light.position.y = parameters.distance * Math.sin( phi ) * Math.sin( theta );
+					light.position.z = parameters.distance * Math.sin( phi ) * Math.cos( theta );
+					sky.material.uniforms[ 'sunPosition' ].value = light.position.copy( light.position );
+					water.material.uniforms[ 'sunDirection' ].value.copy( light.position ).normalize();
+					cubeCamera.update( renderer, sky );
+				}
+				updateSun();
+				//
+				controls = new OrbitControls( camera, renderer.domElement );
+				controls.maxPolarAngle = Math.PI * 0.495;
+				controls.minAzimuthAngle = 2;
+				controls.maxAzimuthAngle = 2.7;
+				controls.target.set( 0, 60, 20 );
+				controls.minDistance = 275.0;
+				controls.maxDistance = 275.0;
+				controls.update();
+				//
+				window.addEventListener( 'resize', onWindowResize, false );
+			}
+			function onWindowResize() {
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+			}
+			function render() {
+				var time = performance.now() * 0.001;
+
+        water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
+
+        evolute(population, function(offspring) {
+          population = offspring
+
+          for(var i = 0; i < population.length; i++) {
+            let organism = organisms[i]
+
+            organism.position.x = (population[i]['x'].fitness / 2) - 25
+            organism.position.y = (population[i]['y'].fitness / 2) + 12.5
+            organism.position.z = (population[i]['z'].fitness / 2) - 25
+          }
+        })
+
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
