@@ -1,7 +1,7 @@
 ---
 title: Realtime vehicle classification for public transport by combining spatiotemporal data
 date: 2020-02-24
-draft: false
+draft: true
 summary: A theoretical setup
 shortTitle: Realtime Vehicle Classification
 type: ovassistant-theoretical-setup
