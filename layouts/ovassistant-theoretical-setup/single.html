@@ -3,7 +3,6 @@
 
 <head>
   {{ partial "header.html" }}
-  {{ partial "mathjax-support.html" }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"></script>
 </head>
 
@@ -34,7 +33,7 @@
     <article class="single-project-text" style="width: calc(100% - 30px);">
       <!-- <div class="container"> -->
         <div class="row">
-          <div class="col-md-7 col-xs-12">
+          <div class="col-md-6 col-xs-12">
             <div class="pull-left full-width">
               <div class="single-project-title" style="margin-left: 25px;">
                 <h1>{{ .Title }}</h1>
@@ -45,9 +44,17 @@
               </section>
             </div>
           </div>
+          <div class="col-md-1">
+            <p><small>Time</small></p>
+          </div>
           <div class="col-md-5 col-xs-12">
             <div class="playground-drawing-board">
-              <div id="container"></div>
+              <div id="container">
+                <div class="arrow-box">
+                  <div class="arrow"></div>
+                  <div class="label">TIME</div>
+                </div>
+              </div>
               <div id="tile"></div>
               <div id="canvas-placeholder" style="width: 1px; height: 1px; display: none;"></div>
             </div>
@@ -62,6 +69,8 @@
 
     import * as THREE from '/js/transport-theory/three.module.js';
     import { OrbitControls } from '/js/transport-theory/OrbitControls.js';
+    // import { LineMaterial } from '/js/transport-theory/LineMaterial.js';
+    import { CSS2DRenderer, CSS2DObject } from '/js/transport-theory/CSS2DRenderer.js';
     
     const run = async () => {
       const parseDate = d3.timeParse("%s")
@@ -110,31 +119,44 @@
       const projection = d3.geoMercator().fitSize([c, c], bbox)
     
       const scene = new THREE.Scene()
-      scene.background = new THREE.Color('#fff')
     
       // Add cube outline 
       const box = new THREE.BoxGeometry(c, c, c)
       var geo = new THREE.EdgesGeometry(box)
-      var mat = new THREE.LineBasicMaterial({ color: 0xdddddd, linewidth: 5 })
+      var mat = new THREE.LineBasicMaterial({ color: 0xdddddd, linewidth: 5, linecap: 'round', linejoin: 'round' })
+      // var mat = new LineMaterial({ color: 0xdddddd, linewidth: 5, vertexColors: true, dashed: false  })
+
+      // var axesHelper = new THREE.AxesHelper( 6 );
+				// scene.add( axesHelper );
+      
       var wireframe = new THREE.LineSegments(geo, mat)
+
+      // console.log({ mat: mat, wireframe: wireframe })
       scene.add(wireframe)
     
       var loader = new THREE.TextureLoader();
-      var material = new THREE.MeshBasicMaterial({ map: loader.load('./image.png') })
+      var material = new THREE.MeshBasicMaterial({ map: loader.load('/images/transport-theory-map-canvas.png') })
       
-      console.log({ material: material, width: material.width, height: material.height })
       var geometry = new THREE.PlaneGeometry(c, c)
     
-      var mesh = new THREE.Mesh(geometry, material)
-      mesh.position.x = 0
-      mesh.position.y = -c / 2
-      mesh.position.z = 0
-      mesh.rotation.x = -Math.PI / 2
-      mesh.rotation.z = Math.PI / 2
-      mesh.scale.x = 1 
-      mesh.scale.y = 1
+      var cube = new THREE.Mesh(geometry, material)
+      cube.position.x = 0
+      cube.position.y = -c / 2
+      cube.position.z = 0
+      cube.rotation.x = -Math.PI / 2
+      cube.rotation.z = Math.PI / 2
+      cube.scale.x = 1 
+      cube.scale.y = 1
     
-      scene.add(mesh)
+      scene.add(cube)
+
+      // var cubeDiv = document.createElement( 'div' );
+      // cubeDiv.className = 'label';
+      // cubeDiv.textContent = 'Time';
+      // // cubeDiv.style.marginTop = '';
+      // var cubeLabel = new CSS2DObject( cubeDiv );
+      // cubeLabel.position.set( 5,-9,7 );
+      // cube.add( cubeLabel );
     
       const project3D = (coord, t = minDate) => {
         const proj = projection(coord)
@@ -143,53 +165,67 @@
         return new THREE.Vector3(proj[1] - c / 2, time, c / 2 - proj[0])
       }
       
-      const trajectories = {}
+      var trajectoryCurveMaterial = new THREE.LineBasicMaterial({ color: '#FACB38', linewidth: 5 })
       for(let i = 1; i <= 8; i++) {
         const trajectory = data.filter(d => d.id === i)
-        trajectories[i] = {}
-        trajectories[i].coords = trajectory.map(d => project3D([d.lon, d.lat], d.date))
+        trajectory.coords = trajectory.map(d => project3D([d.lon, d.lat], d.date))
+        trajectory.geometry = new THREE.BufferGeometry().setFromPoints(trajectory.coords)
+
+        const curve = new THREE.Line(trajectory.geometry, trajectoryCurveMaterial)
+        
+        scene.add(curve)
       }
     
       // const singleVehicleData = data.filter(d => d.id === 5)
-      const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
+      // const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
       // const userCoord = user.map(u => project3D([u.lon, u.lat], u.date))
       const rawUserCoord = data.filter(d => d.id === 9)
       const userCoord = rawUserCoord.map(d => project3D([d.lon, d.lat], d.date))
-      console.log({ user: user, vehicleCoord: vehicleCoord, userCoord: userCoord})
       const userLocationScrollBuffer = 5
-      const userMinCoordZ = d3.min(userCoord, u => u.z)
       const userMaxCoordZ = d3.max(userCoord, u => u.z)
-      const userDiffCoordZ = userMaxCoordZ - userMinCoordZ 
+      const userMinCoordZ = d3.min(userCoord, u => u.z)
+      const userDiffCoordZ = userMinCoordZ - userMaxCoordZ 
     
     
-      // const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
-      vehicleCoord.forEach(function(d) {
-        var geo = new THREE.SphereGeometry(0.07, 16, 16)
-        // var mat = new THREE.MeshBasicMaterial({ color: '#004346' })
-        var mat = new THREE.MeshBasicMaterial({ color: '#FACB38' })
-        var cube = new THREE.Mesh(geo, mat)
-    
-        cube.position.x = d.x
-        cube.position.y = d.y
-        cube.position.z = d.z
-    
-        scene.add(cube)
+      const vehicleCoords = []
+      const vehicleCoordGeometry = new THREE.SphereGeometry(0.07, 16, 16)
+      const vehicleCoordMaterial = new THREE.MeshBasicMaterial({ color: 'rgba(250,203,56,0)' })
+
+      data.forEach(function(d) {
+        const vehicleCoord = project3D([d.lon, d.lat], d.date)
+        const vehicleCoordState = {}
+        vehicleCoordState.mesh = new THREE.Mesh(vehicleCoordGeometry, vehicleCoordMaterial)
+
+        vehicleCoordState.mesh.position.x = vehicleCoord.x
+        vehicleCoordState.mesh.position.y = vehicleCoord.y
+        vehicleCoordState.mesh.position.z = vehicleCoord.z
+        vehicleCoordState.lon = d.lon
+        vehicleCoordState.lat = d.lat
+        vehicleCoordState.date = d.date
+        vehicleCoordState.positionZ = vehicleCoord.z
+
+        vehicleCoords.push(vehicleCoordState)
       })
     
-      const renderer = new THREE.WebGLRenderer({antialias: true})
-          
-      renderer.setSize(width, height);
+      const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true })
+      
+      let containerWidth = document.getElementsByClassName("playground-drawing-board")[0].clientWidth
+      let containerHeight = document.getElementsByClassName("playground-drawing-board")[0].clientHeight
+      renderer.setSize(containerWidth, containerHeight);
       renderer.setPixelRatio(devicePixelRatio);
+      renderer.setClearColor( 0x000000, 0 )
     
-      const camera = new THREE.PerspectiveCamera(30, (width/height), 0.1, 60)
-      camera.position.set(30, 10, 25)
+      const camera = new THREE.PerspectiveCamera(30, (containerWidth/containerHeight), 0.1, 90)
+      camera.position.set(36, 18, 17)
+      camera.zoom = 1
+      camera.updateProjectionMatrix()
     
       const controls = new OrbitControls(camera, renderer.domElement);
-      controls.minDistance = 3;
+      controls.minDistance = 0;
       controls.maxDistance = 50;
       controls.enableZoom = false;
       
-      var curveMaterial = new THREE.LineBasicMaterial({ color: '#FACB38', linewidth: 5 })
+
       var userGeo = new THREE.SphereGeometry(0.16, 16, 16)
       var userMat = new THREE.MeshBasicMaterial({ color: '#D0021B' })
       var userRadiusMat = new THREE.MeshBasicMaterial({ color: 'rgba(208,2,27,50)'})
@@ -211,23 +247,43 @@
       const redraw = () => {
         const scrollTopOffset = window.pageYOffset || document.documentElement.scrollTop;
     
-        const body = document.body,
-        html = document.documentElement;
+        const body = document.body
+        const html = document.documentElement;
         const scrollHeight = Math.max( body.scrollHeight, body.offsetHeight, 
                            html.clientHeight, html.scrollHeight, html.offsetHeight );
     
         const windowHeight = window.innerHeight
-        const userScrollDate = userMinCoordZ + (userDiffCoordZ * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
-        for(const i in trajectories) {
-          if(i > 0) {
-            const trajectory = trajectories[i]
-            const activePointsBoundary = Math.ceil(trajectory.coords.length * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
-            trajectory.geometry.setDrawRange(trajectory.points.length - activePointsBoundary, trajectory.points.length)
-    
-            const curve = new THREE.Line(trajectory.geometry, curveMaterial)
-            scene.add(curve)
+        const userScrollDate = userMaxCoordZ + (userDiffCoordZ * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
+        
+        let j = 0
+        for(const i in vehicleCoords) {
+          const coord = vehicleCoords[i]
+          // console.log({ positionZ: coord.positionZ, scroll: userScrollDate - userLocationScrollBuffer })
+
+          if(coord.positionZ > userScrollDate - userLocationScrollBuffer && coord.positionZ < userScrollDate + userLocationScrollBuffer) {
+            
           }
         }
+
+        // console.log({ parsedCoords: j })
+        
+        // for(const i in trajectories) {
+        //   if(i > 0) {
+        //     const trajectory = trajectories[i]
+
+        //     const blueprintCurve = new THREE.CatmullRomCurve3(trajectory.coords)
+    
+        //     trajectories[i].points = blueprintCurve.getPoints(trajectory.coords.length);
+        //     trajectories[i].geometry = new THREE.BufferGeometry().setFromPoints(trajectories[i].points)
+
+        //     // console.log({ trajectory: trajectory })
+        //     // const activePointsBoundary = Math.ceil(trajectory.coords.length * (scrollTopOffset + (scrollTopOffset * windowHeight / (scrollHeight - windowHeight))) / scrollHeight)
+        //     // trajectory.geometry.setDrawRange(trajectory.points.length - activePointsBoundary, trajectory.points.length)
+    
+        //     const curve = new THREE.Line(trajectory.geometry, curveMaterial)
+        //     scene.add(curve)
+        //   }
+        // }
     
         userRadiusScale = userRadiusScale * 2
         userRadiusCube.scale.x = userRadiusScale
@@ -236,53 +292,36 @@
     
         userCoord.forEach(function (u) {
           if(u.z > userScrollDate - userLocationScrollBuffer && u.z < userScrollDate + userLocationScrollBuffer) {
-    
-            // if(userCube.position.z !== u.z) {
-            //   userRadiusScale = 2 
-            //   userRadiusCube.position.x = u.x 
-            //   userRadiusCube.position.y = u.y
-            //   userRadiusCube.position.z = u.z
-            //   userRadiusCube.scale.x = userRadiusScale
-            //   userRadiusCube.scale.y = userRadiusScale
-            //   userRadiusCube.scale.z = userRadiusScale
-            // } 
-    
+            // console.log({ z: u.z, scroll: userScrollDate - userLocationScrollBuffer })
             userCube.position.x = u.x
             userCube.position.y = u.y
             userCube.position.z = u.z
           }
-          
         })
     
         renderer.render(scene, camera);
+        // labelRenderer.render( scene, camera );
       }
       
       controls.addEventListener("change", redraw);
       document.addEventListener("scroll", redraw);
     
-      // add line through data points
-    
-      // for an interpolated curve
-    
-      for(const i in trajectories) {
-        if(i > 0) {
-          const trajectory = trajectories[i]
-          
-          const curve = new THREE.CatmullRomCurve3(trajectory.coords)
-    
-          trajectories[i].points = curve.getPoints(trajectory.coords.length > 200 ? 200 : trajectory.coords.length);
-          trajectories[i].geometry = new THREE.BufferGeometry().setFromPoints(trajectories[i].points)
-        }
-      }
-    
       renderer.render(scene, camera);
+
+      // const labelRenderer = new CSS2DRenderer();
+      // labelRenderer.setSize( window.innerWidth, window.innerHeight );
+      // labelRenderer.domElement.style.position = 'fixed';
+      // labelRenderer.domElement.style.pointerEvents = 'none';
+      // labelRenderer.domElement.style.top = 0;
     
       const container = document.getElementById( 'tile' );
       container.appendChild(renderer.domElement)
+      // container.appendChild( labelRenderer.domElement );
     }
     
     run()
   </script>
+  {{ partial "mathjax-support.html" }}
 </body>
 
 </html>
