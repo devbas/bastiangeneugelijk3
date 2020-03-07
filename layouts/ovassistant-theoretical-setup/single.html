@@ -3,6 +3,7 @@
 
 <head>
   {{ partial "header.html" }}
+  {{ partial "mathjax-support.html" }}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"></script>
 </head>
 
@@ -44,10 +45,7 @@
               </section>
             </div>
           </div>
-          <div class="col-md-1">
-            <p><small>Time</small></p>
-          </div>
-          <div class="col-md-5 col-xs-12">
+          <div class="col-md-1-offset col-md-5 col-xs-12">
             <div class="playground-drawing-board">
               <div id="container">
                 <div class="arrow-box">
@@ -124,14 +122,9 @@
       const box = new THREE.BoxGeometry(c, c, c)
       var geo = new THREE.EdgesGeometry(box)
       var mat = new THREE.LineBasicMaterial({ color: 0xdddddd, linewidth: 5, linecap: 'round', linejoin: 'round' })
-      // var mat = new LineMaterial({ color: 0xdddddd, linewidth: 5, vertexColors: true, dashed: false  })
-
-      // var axesHelper = new THREE.AxesHelper( 6 );
-				// scene.add( axesHelper );
       
       var wireframe = new THREE.LineSegments(geo, mat)
 
-      // console.log({ mat: mat, wireframe: wireframe })
       scene.add(wireframe)
     
       var loader = new THREE.TextureLoader();
@@ -149,14 +142,6 @@
       cube.scale.y = 1
     
       scene.add(cube)
-
-      // var cubeDiv = document.createElement( 'div' );
-      // cubeDiv.className = 'label';
-      // cubeDiv.textContent = 'Time';
-      // // cubeDiv.style.marginTop = '';
-      // var cubeLabel = new CSS2DObject( cubeDiv );
-      // cubeLabel.position.set( 5,-9,7 );
-      // cube.add( cubeLabel );
     
       const project3D = (coord, t = minDate) => {
         const proj = projection(coord)
@@ -175,10 +160,7 @@
         
         scene.add(curve)
       }
-    
-      // const singleVehicleData = data.filter(d => d.id === 5)
-      // const vehicleCoord = data.map(d => project3D([d.lon, d.lat], d.date))
-      // const userCoord = user.map(u => project3D([u.lon, u.lat], u.date))
+  
       const rawUserCoord = data.filter(d => d.id === 9)
       const userCoord = rawUserCoord.map(d => project3D([d.lon, d.lat], d.date))
       const userLocationScrollBuffer = 5
@@ -307,21 +289,13 @@
       document.addEventListener("scroll", redraw);
     
       renderer.render(scene, camera);
-
-      // const labelRenderer = new CSS2DRenderer();
-      // labelRenderer.setSize( window.innerWidth, window.innerHeight );
-      // labelRenderer.domElement.style.position = 'fixed';
-      // labelRenderer.domElement.style.pointerEvents = 'none';
-      // labelRenderer.domElement.style.top = 0;
     
       const container = document.getElementById( 'tile' );
       container.appendChild(renderer.domElement)
-      // container.appendChild( labelRenderer.domElement );
     }
     
     run()
   </script>
-  {{ partial "mathjax-support.html" }}
 </body>
 
 </html>
