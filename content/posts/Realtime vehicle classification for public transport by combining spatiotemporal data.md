@@ -8,7 +8,7 @@ type: ovassistant-theoretical-setup
 project: self-initiated
 ---
 
-I live in The Netherlands, one of the countries where almost all public transport companies publish live GPS coordinates from active vehicles. After [my last article](https://bastiangeneugelijk.com/public-transport-assistant/) about what can be done with these coordinates, I will now describe a theoretical setup for vehicle classification taking smartphone GPS coordinates as input. The objective is to classify a vehicle, given a set of coordinates over time.
+I live in The Netherlands, one of the countries where almost all public transport companies publish live GPS coordinates from active vehicles. After [my last article](https://bastiangeneugelijk.com/projects/how-realtime-vehicle-classification-can-improve-the-travel-experience-of-public-transport/) about what can be done with these coordinates, I will now describe a theoretical setup for vehicle classification taking smartphone GPS coordinates as input. The objective is to classify a vehicle, given a set of coordinates over time.
 
 &nbsp;
 
