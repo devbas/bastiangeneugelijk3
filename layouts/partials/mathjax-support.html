@@ -29,12 +29,14 @@
 
 <script src="/js/tex-svg.js"></script>
 <script type="text/javascript">
-window.MathJax = {
-  tex: {
-    inlineMath: [['$', '$'], ['\\(', '\\)']]
-  },
-  svg: {
-    fontCache: 'global'
-  }
-};
+document.addEventListener("DOMContentLoaded", function(event) { 
+  window.MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    },
+    svg: {
+      fontCache: 'global'
+    }
+  };
+})
 </script>
