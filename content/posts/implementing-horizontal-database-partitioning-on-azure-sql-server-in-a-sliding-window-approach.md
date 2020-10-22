@@ -61,6 +61,47 @@ BEGIN TRAN
 COMMIT TRAN;
 ```
 
+### Partitioning Function 
+A partitioning function maps the rows of a table or index into partitions based on the values of the specified column. In our example, *ReportDate* is defined as the partitioning column. Since we apply partitioning to an existing table, we build the partitioning function dynamically:
+
+```sql 
+-- The Partitioning function is build from the minimal timestamp 
+-- present to a given reference date.
+
+DECLARE @DatePartitionFunction nvarchar(max) = 
+  N'CREATE PARTITION FUNCTION ReportsRetentionFunction (BIGINT)
+  AS RANGE LEFT FOR VALUES('
+
+DECLARE @ReferenceDate AS BIGINT
+DECLARE @ReferenceBoundary AS BIGINT
+DECLARE @NextBoundary AS BIGINT
+DECLARE @PartitionWindow AS BIGINT
+DECLARE @OldestBoundary AS BIGINT
+
+-- Use modulo to get the start of day for the minimum ReportDate.
+SELECT @OldestBoundary = ((MIN(ReportDate) - (MIN(ReportDate) % (3600000 * 24))) + 3600000 * 24)
+FROM source.EmployeeReports
+
+SET @NextBoundary = OldestBoundary
+
+-- Set a Partition Window equivalent to 24 hours. This
+SET @PartitionWindow = 86400000
+
+SELECT @ReferenceDate = DATE(SECOND,'1970-01-01', GETUTCDATE())
+SELECT @ReferenceBoundary = ((@ReferenceDate - @ReferenceDate % (3600 * 24)) + 3600 * 24) * 1000
+
+WHILE @NextBoundary <= @ReferenceBoundary
+  BEGIN
+    IF (@NextBoundary = @ReferenceBoundary) SET @DatePartitionFunction += CAST(@NextBoundary AS NVARCHAR) + N''
+    IF (@NextBoundary < @ReferenceBoundary) SET @DatePartitionFunction += CAST(@NextBoundary AS NVARCHAR) + N', '
+
+    SET @NextBoundary = @NextBoundary + @PartitionWindow
+  END
+SET @DatePartitionFunction += ');'
+
+EXEC sp_executesql @DatePartitionFunction
+```
+
 ### Partitioning Scheme
 
 A partitioning scheme can be viewed as a connection between a Partition Function and Filegroups. In the scope of this article, default SQL Server behaviour regarding Filegroups is implemented: every partition gets mapped to the Primary Filegroup:
